@@ -1,5 +1,7 @@
-test_sem:./test_sem.c ./common.c
+#bin_tree:./bin_tree.c ./seqqueue.c ./seqstack.c
+thread_tree:./thread_tree.c
 	gcc -o $@ -g $^
 .PHONY:clean
 clean:
-	rm -rf test_sem
+	rm -f thread_tree
+#	rm -f bin_tree
