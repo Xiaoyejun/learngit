@@ -115,6 +115,100 @@ void PreOrderByThreading(ThreadTree* root)
     }
 }
 
+void _InOrderThreading(ThreadTree* root, ThreadTree** prev)
+{
+    if(root == NULL || prev == NULL)
+    {
+        return;
+    }
+    //处理左子树
+    if(root->left == CHILD)
+    {
+        _InOrderThreading(root->lchild,prev);
+    }
+    //处理根节点
+    if(root->lchild == NULL)
+    {
+        root->lchild = *prev;
+        root->left = THREAD;
+    }
+    if(*prev != NULL && (*prev)->rchild == NULL)
+    {
+        (*prev)->rchild = root;
+        (*prev)->right = THREAD;
+    }
+    *prev = root;
+    //处理右子树
+    if(root->right == CHILD)
+    {
+        _InOrderThreading(root->rchild,prev);
+    }
+    
+}
+
+
+void InOrderThreading(ThreadTree* root)
+{
+    ThreadTree* prev = NULL;
+    _InOrderThreading(root,&prev);
+}
+
+void InOrderByThreading(ThreadTree* root)
+{
+    if(root == NULL)
+    {
+        return;
+    }
+    ThreadTree* cur = root;
+    while(cur->left == CHILD && cur->lchild != NULL)
+    {
+        cur = cur->lchild;
+    }
+    while(cur->rchild != NULL)
+    {
+        printf("%c ",cur->data);
+        cur = cur->rchild;
+    }
+    printf("%c ",cur->data);
+
+}
+
+void _PostOrderThreading(ThreadTree* root, ThreadTree** prev)
+{
+    if(root == NULL || prev == NULL)
+    {
+        return;
+    }
+    //处理左子树
+    if(root->left == CHILD)
+    {
+        _InOrderThreading(root->lchild,prev);
+    }
+    //处理右子树
+    if(root->right == CHILD)
+    {
+        _InOrderThreading(root->rchild,prev);
+    }
+    //处理根节点
+    if(root->lchild == NULL)
+    {
+        root->lchild = *prev;
+        root->left = THREAD;
+    }
+    if(*prev != NULL && (*prev)->rchild == NULL)
+    {
+        (*prev)->rchild = root;
+        (*prev)->right = THREAD;
+    }
+    *prev = root;
+}
+
+void PostOrderThreading(ThreadTree* root)
+{
+    ThreadTree* prev = NULL;
+    _PostOrderThreading(root,&prev);
+}
+
 ///////////////////////////////////////////////////////
 /////TEST
 ///////////////////////////////////////////////////////
@@ -148,6 +242,16 @@ void TestPreOrderThreading()
     PreOrderByThreading(root);
     printf("\n");
 }
+void TestInOrderThreading()
+{
+    ThreadTree* root = NULL;
+    ThreadTreeType array[] = "abd##e##c#f##";
+    root = ThreadTreeCreate(array,strlen(array),'#');
+    printf("中序遍历结果是:");
+    InOrderThreading(root);
+    InOrderByThreading(root);
+    printf("\n");
+}
 int main()
 {
     printf("\n");
@@ -156,5 +260,6 @@ int main()
     printf("\n");
     TestPreOrderThreading();
     printf("\n");
+    TestInOrderThreading();
     return 0;
 }
