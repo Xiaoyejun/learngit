@@ -1,6 +1,7 @@
-maze:maze.c
-maze.c:
-	gcc -g $@ -o $^
+server:server.c
+#client:client.c
+	gcc -o $@ -g $^
 .PHONY:clean
 clean:
-	rm -rf maze
+#	rm -f client
+	rm -f server
