@@ -1,7 +1,5 @@
-server:server.c
-#client:client.c
+heap:heap.c
 	gcc -o $@ -g $^
 .PHONY:clean
 clean:
-#	rm -f client
-	rm -f server
+	rm -f heap
