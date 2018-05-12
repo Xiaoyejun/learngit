@@ -1,5 +1,7 @@
-heap:heap.c
+search_tree:search_tree.c
 	gcc -o $@ -g $^
-.PHONY:clean
+.PHONY:
+	clean
 clean:
-	rm -f heap
+	rm -f search_tree
+
