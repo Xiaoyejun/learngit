@@ -77,31 +77,51 @@ void Swap(SearchTreeType* a, SearchTreeType* b)
 }
 
 
-void _SearchTreeRomove(SearchTreeNode** cur)
+
+void _SearchTreeRemove(SearchTreeNode** cur)
 {
     if(cur == NULL)
     {
         return;
     }
-    if(*cur == NULL)
-    {
-        return;
-    }
-    if((*cur)->lchild != NULL){
-        Swap(&(*cur)->data,&(*cur)->lchild->data);
-        _SearchTreeRomove(&(*cur)->lchild);
-    }
-    else if((*cur)->rchild != NULL){
-        Swap(&(*cur)->data,&(*cur)->rchild->data);
-        _SearchTreeRomove(&(*cur)->rchild);
-    }else
+    //1.要删除的节点是叶子节点，就直接释放，然后置空，注意要用二级指针接收
+    if((*cur)->lchild == NULL && (*cur)->rchild == NULL)
     {
         free(*cur);
         *cur = NULL;
+        return;
     }
-    
+    SearchTreeNode** to_delete = cur;
+    //仅有左子树，就把左子树上移，因为是二级指针，所以直接解引用将其置空就好
+    //仅有右子树，就把右子树上移
+    if((*cur)->rchild == NULL )
+    {
+        to_delete = cur;
+        *cur = (*cur)->lchild;
+        free(*to_delete);
+        return;
+    }
+    else if((*cur)->lchild == NULL )
+    {
+        to_delete = cur;
+        *cur = (*cur)->lchild;
+        free(*to_delete);
+        return;
+    }
+    //3.要删除节点的左孩子和右孩子节点不是叶子节点，也就是说子树较多
+    //      1.找到左子树中的最大值，
+    //      2.将这个最大值与当前节点要被删除的值交换
+    //      3.保证被删除的值处于一个叶子节点上
+    else{
+        to_delete = &(*cur)->lchild;
+        while((*to_delete)->rchild != NULL)
+        {
+            *to_delete = (*to_delete)->rchild;
+        }
+        Swap(&(*cur)->data,&(*to_delete)->data);
+        _SearchTreeRemove(to_delete);
+    }
 }
-
 //删除指定值
 void SearchTreeRemove(SearchTreeNode** root, SearchTreeType key) 
 {
@@ -115,8 +135,20 @@ void SearchTreeRemove(SearchTreeNode** root, SearchTreeType key)
         //空的二叉搜索树
         return;
     }
-    SearchTreeNode* cur = SearchTreeFind(*root,key);
-    _SearchTreeRomove(&cur);
+    else{
+        if((*root)->data == key)
+        {
+            _SearchTreeRemove(root);
+            return;
+        }
+        else if(key < (*root)->data && (*root)->lchild != NULL)
+        {
+            SearchTreeRemove(&(*root)->lchild,key);
+        }else if (key > (*root)->data && (*root)->rchild != NULL)
+        {
+            SearchTreeRemove(&(*root)->rchild,key);
+        }
+    }
 }
 
 //////////////////////////////////////////////////
@@ -204,8 +236,10 @@ void TestRemove()
     SearchTreeInsert(&root,'e');
     SearchTreeInsert(&root,'a');
     SearchTreeInsert(&root,'b');
-    SearchTreeNodePrintChar(root,"插入五个元素");
-    SearchTreeRemove(&root,'c');
+    SearchTreeInsert(&root,'f');
+    SearchTreeInsert(&root,'g');
+    SearchTreeNodePrintChar(root,"插入七个元素");
+    SearchTreeRemove(&root,'g');
     SearchTreeNodePrintChar(root,"删除一个指定元素");
 }
 
